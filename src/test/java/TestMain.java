@@ -39,6 +39,8 @@ public class TestMain {
         for (Cookie cookie : testCookieJar.getCookies()) {
             System.out.println(cookie.getName() + " = " + cookie.getValue());
         }
+
+        httpClient.close();
     }
 
 }
