@@ -10,7 +10,7 @@
 I made this because i could not find a java tls solution. So i made one. This uses a fork of [Carcraftz Proxy](https://github.com/Carcraftz/TLS-Fingerprint-API) (i will post later).
 
 # Requirements
-[GO](https://golang.org/) GO lang is required for the TLS client to work!
+[GO](https://golang.org/) lang is required for the TLS client to work!
 
 [Native DLL](https://github.com/skateboard/tls-client/blob/main/src/main/resources/native_client.dll) must be present when using.
 
