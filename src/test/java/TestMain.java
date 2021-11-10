@@ -1,12 +1,9 @@
 import com.google.gson.JsonObject;
-import com.sun.jna.Native;
 import me.brennan.tls.HttpClient;
-import me.brennan.tls.body.provided.FormBody;
 import me.brennan.tls.body.provided.JsonBody;
 import me.brennan.tls.cookie.Cookie;
 import me.brennan.tls.request.Request;
 import me.brennan.tls.request.Response;
-import me.brennan.tls.utils.LibraryUtil;
 
 /**
  * @author Brennan / skateboard
@@ -15,7 +12,7 @@ import me.brennan.tls.utils.LibraryUtil;
 public class TestMain {
 
     public static void main(String[] args) {
-        System.setProperty("tls.client.path", LibraryUtil.INSTANCE.getLibrary());
+        System.setProperty("tls.client.path", "native_client.dll");
 
 
         final TestCookieJar testCookieJar = new TestCookieJar();

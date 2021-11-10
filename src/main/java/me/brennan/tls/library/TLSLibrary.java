@@ -3,7 +3,6 @@ package me.brennan.tls.library;
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import me.brennan.tls.types.GoString;
-import me.brennan.tls.utils.LibraryUtil;
 
 /**
  * @author Brennan / skateboard
