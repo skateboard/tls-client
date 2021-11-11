@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sun.jna.Native;
 import me.brennan.tls.body.Body;
+import me.brennan.tls.converter.Converter;
 import me.brennan.tls.cookie.Cookie;
 import me.brennan.tls.cookie.CookieJar;
 import me.brennan.tls.library.TLSLibrary;
@@ -23,19 +24,21 @@ public class HttpClient {
     private final CookieJar cookieJar;
     private final String proxy;
     private final TLSLibrary tlsLibrary;
+    private final Converter converter;
 
-    public HttpClient(CookieJar cookieJar, String proxy) {
+    public HttpClient(CookieJar cookieJar, String proxy, Converter converter) {
         this.cookieJar = cookieJar;
         this.proxy = proxy == null ? "" : proxy;
+        this.converter = converter;
 
         this.tlsLibrary = TLSLibrary.INSTANCE;
     }
 
-    public Response execute(Request request) {
+    public Response<Object> execute(Request request) {
         return request.getMethod().equals("GET") ? executeGET(request) : executeData(request);
     }
 
-    private Response executeData(Request request) {
+    private Response<Object> executeData(Request request) {
         if (cookieJar != null) {
             final StringJoiner stringJoiner = new StringJoiner(";");
 
@@ -64,7 +67,7 @@ public class HttpClient {
                 stringJoiner.add(cookieString);
             }
 
-            request.getHeaders().put("cookie", stringJoiner.toString());
+            request.getHeaders().put("Cookie", stringJoiner.toString());
         }
 
         final String requestResponse = TLSLibrary.INSTANCE.data_request(
@@ -134,10 +137,43 @@ public class HttpClient {
         if (cookieJar != null)
             cookieJar.saveFromRequest(request.getUrl(), cookies);
 
-        return new Response(request.getUrl(), requestObject.get("statusCode").getAsInt(), responseHeaders, requestObject.get("body").getAsString());
+        Object object = converter.convertFrom(requestObject.get("body").getAsString());
+
+        return new Response(request.getUrl(), requestObject.get("statusCode").getAsInt(), responseHeaders, object);
     }
 
-    private Response executeGET(Request request) {
+    private Response<Object> executeGET(Request request) {
+        if (cookieJar != null) {
+            final StringJoiner stringJoiner = new StringJoiner(";");
+
+            for (Cookie cookie : cookieJar.loadForRequest(request.getUrl())) {
+                String cookieString = cookie.getName() + "=" + cookie.getValue();
+
+                if (cookie.isSecure()) {
+                    cookieString += "; Secure";
+                }
+
+                if (cookie.getExpiresAt() != null) {
+                    cookieString += "; expires=" + cookie.getExpiresAt();
+                }
+
+                if (cookie.getMaxAge() != 0) {
+                    cookieString += "; max-age=" + cookie.getMaxAge();
+                }
+
+                if (cookie.getDomain() != null) {
+                    cookieString += "; domain=" + cookie.getDomain();
+                }
+
+                if (cookie.getPath() != null) {
+                    cookieString += "; path=" + cookie.getPath();
+                }
+                stringJoiner.add(cookieString);
+            }
+
+            request.getHeaders().put("Cookie", stringJoiner.toString());
+        }
+
         final String requestResponse = TLSLibrary.INSTANCE.get_request(
                 new GoString(request.getUrl()),
                 request.isAllowRedirect(),
@@ -203,7 +239,9 @@ public class HttpClient {
         if (cookieJar != null)
             cookieJar.saveFromRequest(request.getUrl(), cookies);
 
-        return new Response(request.getUrl(),requestObject.get("statusCode").getAsInt(), responseHeaders, requestObject.get("body").getAsString());
+        Object object = converter.convertFrom(requestObject.get("body").getAsString());
+
+        return new Response<>(request.getUrl(), requestObject.get("statusCode").getAsInt(), responseHeaders, object);
     }
 
     public void close() {
@@ -213,20 +251,28 @@ public class HttpClient {
     public static class Builder {
         private CookieJar cookieJar;
         private String proxy;
+        private Converter converter;
 
+        public Builder converter(Converter converter) {
+            this.converter = converter;
+
+            return this;
+        }
 
         public Builder proxy(String proxy) {
             this.proxy = proxy;
+
             return this;
         }
 
         public Builder cookieJar(CookieJar cookieJar) {
             this.cookieJar = cookieJar;
+
             return this;
         }
 
         public HttpClient build() {
-            return new HttpClient(cookieJar, proxy);
+            return new HttpClient(cookieJar, proxy, converter);
         }
     }
 }

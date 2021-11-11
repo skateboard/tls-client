@@ -6,7 +6,5 @@ package me.brennan.tls.converter;
  **/
 public interface Converter<V> {
 
-    String convertTo(String value);
-
     V convertFrom(String value);
 }

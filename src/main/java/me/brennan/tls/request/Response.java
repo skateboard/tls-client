@@ -8,13 +8,13 @@ import java.util.Map;
  * @author Brennan / skateboard
  * @since 11/8/2021
  **/
-public class Response {
+public class Response<V> {
     private String url;
     private int statusCode;
     private Map<String, String> headers;
-    private String data;
+    private V data;
 
-    public Response(String url, int statusCode, Map<String, String> headers, String data) {
+    public Response(String url, int statusCode, Map<String, String> headers, V data) {
         this.url = url;
         this.statusCode = statusCode;
         this.headers = headers;
@@ -33,7 +33,7 @@ public class Response {
         return headers;
     }
 
-    public String getData() {
+    public V getData() {
         return data;
     }
 }
