@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.sun.jna.Native;
 import me.brennan.tls.body.Body;
 import me.brennan.tls.converter.Converter;
+import me.brennan.tls.converter.provided.StringConverter;
 import me.brennan.tls.cookie.Cookie;
 import me.brennan.tls.cookie.CookieJar;
 import me.brennan.tls.library.TLSLibrary;
@@ -32,6 +33,10 @@ public class HttpClient {
         this.converter = converter;
 
         this.tlsLibrary = TLSLibrary.INSTANCE;
+    }
+
+    public HttpClient(CookieJar cookieJar, String proxy) {
+        this(cookieJar, proxy, new StringConverter());
     }
 
     public Response<Object> execute(Request request) {
@@ -272,7 +277,10 @@ public class HttpClient {
         }
 
         public HttpClient build() {
-            return new HttpClient(cookieJar, proxy, converter);
+            if (converter != null)
+                return new HttpClient(cookieJar, proxy, converter);
+            
+            return new HttpClient(cookieJar, proxy);
         }
     }
 }
