@@ -7,12 +7,12 @@
 <br />
 
 # Introduction
-I made this because i could not find a java tls solution. So i made one. This uses a fork of [Carcraftz Proxy](https://github.com/Carcraftz/TLS-Fingerprint-API) (i will post later).
+I made this because i could not find a java tls solution. So i made one. This uses a fork of [Carcraftz Proxy](https://github.com/skateboard/TLS-Fingerprint-API)
 
 # Requirements
 [GO](https://golang.org/) lang is required for the TLS client to work!
 
-[Native DLL](https://github.com/skateboard/tls-client/blob/main/src/main/resources/native_client.dll) must be present when using.
+[Native DLL](https://github.com/skateboard/tls-client/blob/main/native_client.dll) must be present when using.
 
 # Example Usage
 [Example GET](https://github.com/skateboard/tls-client/wiki/Example-GET-request)
