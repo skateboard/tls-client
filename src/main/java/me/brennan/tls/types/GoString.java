@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author Brennan / skateboard
- * @since 11/8/2021
+ * @author freewind
+ * @url https://github.com/freewind-demos/call-go-function-from-java-demo/blob/master/src/main/java/demo/types/GoString.java
  **/
 public class GoString extends Structure implements Structure.ByValue {
     public String p;
