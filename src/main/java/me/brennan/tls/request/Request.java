@@ -130,6 +130,16 @@ public class Request {
             return this;
         }
 
+        public Builder defaultIOSHeaders() {
+            return defaultIOSHeaders(RandomUserAgent.getRandomUserAgent("Safari"));
+        }
+
+        public Builder defaultIOSHeaders(String userAgent) {
+            addHeader("User-Agent", userAgent);
+
+            return this;
+        }
+
         public Builder defaultFirefoxHeaders() {
             return defaultChromeHeaders(RandomUserAgent.getRandomUserAgent("Firefox"));
         }
