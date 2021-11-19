@@ -130,6 +130,21 @@ public class Request {
             return this;
         }
 
+        public Builder defaultFirefoxHeaders() {
+            return defaultChromeHeaders(RandomUserAgent.getRandomUserAgent("Firefox"));
+        }
+
+        public Builder defaultFirefoxHeaders(String userAgent) {
+            addHeader("Sec-Fetch-Dest", "document");
+            addHeader("Sec-Fetch-Mode", "navigate");
+            addHeader("Sec-Fetch-Site", "cross-site");
+            addHeader("Sec-Fetch-User", "?1");
+            addHeader("Upgrade-Insecure-Requests", "1");
+            addHeader("User-Agent", userAgent);
+
+            return this;
+        }
+
         public Builder defaultChromeHeaders() {
             return defaultChromeHeaders(RandomUserAgent.getRandomUserAgent("Chrome"));
         }

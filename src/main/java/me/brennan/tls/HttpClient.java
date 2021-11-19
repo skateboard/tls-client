@@ -4,17 +4,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sun.jna.Native;
-import me.brennan.tls.body.Body;
 import me.brennan.tls.converter.Converter;
 import me.brennan.tls.converter.provided.StringConverter;
 import me.brennan.tls.cookie.Cookie;
 import me.brennan.tls.cookie.CookieJar;
+import me.brennan.tls.exception.ClientException;
 import me.brennan.tls.library.TLSLibrary;
 import me.brennan.tls.request.Request;
 import me.brennan.tls.request.Response;
 import me.brennan.tls.types.GoString;
 
-import java.text.DateFormat;
 import java.util.*;
 
 /**
@@ -26,17 +25,23 @@ public class HttpClient {
     private final String proxy;
     private final TLSLibrary tlsLibrary;
     private final Converter converter;
+    private Browser browser;
 
-    public HttpClient(CookieJar cookieJar, String proxy, Converter converter) {
+    public HttpClient(CookieJar cookieJar, String proxy, Converter converter, Browser browser) throws ClientException {
+        if (System.getProperty("tls.client.path") == null) {
+            throw new ClientException("You must set the tls.client.path property to the path of the native client library!");
+        }
+
         this.cookieJar = cookieJar;
         this.proxy = proxy == null ? "" : proxy;
         this.converter = converter;
+        this.browser = browser;
 
         this.tlsLibrary = TLSLibrary.INSTANCE;
     }
 
     public HttpClient(CookieJar cookieJar, String proxy) {
-        this(cookieJar, proxy, new StringConverter());
+        this(cookieJar, proxy, new StringConverter(), Browser.CHROME);
     }
 
     public Response<Object> execute(Request request) {
@@ -77,6 +82,7 @@ public class HttpClient {
 
         final String requestResponse = TLSLibrary.INSTANCE.data_request(
                 new GoString(request.getUrl()),
+                new GoString(browser.getBrowserName()),
                 new GoString(request.getMethod()),
                 new GoString(request.getBody()),
                 request.isAllowRedirect(),
@@ -181,6 +187,7 @@ public class HttpClient {
 
         final String requestResponse = TLSLibrary.INSTANCE.get_request(
                 new GoString(request.getUrl()),
+                new GoString(browser.getBrowserName()),
                 request.isAllowRedirect(),
                 new GoString(proxy),
                 request.getParameters() != null ? new GoString(request.getParametersAsString()) : new GoString(""),
@@ -253,10 +260,34 @@ public class HttpClient {
         Native.unregister(tlsLibrary.getClass());
     }
 
+    public enum Browser {
+        CHROME("chrome"),
+        FIREFOX("firefox"),
+        IOS("ios");
+
+        private final String browserName;
+
+        Browser(String browserName) {
+            this.browserName = browserName;
+        }
+
+        public String getBrowserName() {
+            return browserName;
+        }
+    }
+
     public static class Builder {
         private CookieJar cookieJar;
         private String proxy;
         private Converter converter;
+
+        private Browser browser;
+
+        public Builder browser(Browser browser) {
+            this.browser = browser;
+
+            return this;
+        }
 
         public Builder converter(Converter converter) {
             this.converter = converter;
@@ -277,9 +308,9 @@ public class HttpClient {
         }
 
         public HttpClient build() {
-            if (converter != null)
-                return new HttpClient(cookieJar, proxy, converter);
-            
+            if (converter != null || browser != null)
+                return new HttpClient(cookieJar, proxy, converter, browser);
+
             return new HttpClient(cookieJar, proxy);
         }
     }

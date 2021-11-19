@@ -21,30 +21,21 @@ public class TestMain {
         final HttpClient httpClient = new HttpClient.Builder()
                 .cookieJar(testCookieJar)
                 .converter(new GsonConverter())
+                .browser(HttpClient.Browser.CHROME)
                 .build();
 
         final JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("test", "hi");
 
-        FormBody body = new FormBody.Builder()
-                .add("test", "hi")
-                .build();
-
         Request request = new Request.Builder()
-                .url("https://httpbin.org/anything")
+                .url("https://ja3er.com/json")
                 .defaultChromeHeaders()
-                .post(new JsonBody(jsonObject))
+                .get()
                 .build();
         final Response<Object> response = httpClient.execute(request);
         final JsonObject responseObject = (JsonObject) response.getData();
-
-        System.out.println(responseObject.get("json"));
-
-        for (Cookie cookie : testCookieJar.getCookies()) {
-            System.out.println(cookie.getName() + " = " + cookie.getValue());
-        }
+        System.out.println(responseObject);
 
         httpClient.close();
     }
-
 }

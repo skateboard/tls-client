@@ -11,7 +11,7 @@ import me.brennan.tls.types.GoString;
 public interface TLSLibrary extends Library {
     TLSLibrary INSTANCE = Native.load(System.getProperty("tls.client.path"), TLSLibrary.class);
 
-    String data_request(GoString requesturl, GoString method, GoString requestbody, boolean allowredirect, GoString proxy, GoString addedQuery, GoString headers);
+    String data_request(GoString requesturl, GoString browser, GoString method, GoString requestbody, boolean allowredirect, GoString proxy, GoString addedQuery, GoString headers);
 
-    String get_request(GoString requesturl, boolean allowredirect, GoString proxy, GoString addedQuery, GoString headers);
+    String get_request(GoString requesturl, GoString browser, boolean allowredirect, GoString proxy, GoString addedQuery, GoString headers);
 }
